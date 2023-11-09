@@ -20,14 +20,8 @@ var port = externalUrl && process.env.PORT ? parseInt(process.env.PORT) : 4092;
 var apiBaseURL = 'https://localhost/8081';
 var baseURL = externalUrl || "https://localhost:".concat(port);
 var config = {
-    authRequired: false,
-    auth0Logout: true,
-    secret: process.env.CLIENT_SECRET,
     baseURL: baseURL,
-    clientID: process.env.CLIENT_ID,
-    issuerBaseURL: 'https://dev-y7q23kiz1uhksjri.eu.auth0.com',
 };
-app.use(auth(config));
 // Middleware to make the `user` object available for all views
 app.use(function (req, res, next) {
     res.locals.user = req.oidc.user;
@@ -37,17 +31,14 @@ app.use(function (req, res, next) {
 });
 app.use('/', router);
 if (externalUrl) {
-    var hostname_1 = process.env.HOST; //ne 127.0.0.1
+    var hostname_1 = process.env.HOST;
     console.log(hostname_1 + " " + port + " " + externalUrl);
     app.listen(port, hostname_1, function () {
         console.log("Server locally running at http://".concat(hostname_1, ":").concat(port, "/ and from\n    outside on ").concat(externalUrl));
     });
 }
 else {
-    https.createServer({
-        key: fs.readFileSync('server.key'),
-        cert: fs.readFileSync('server.cert')
-    }, app)
+    https.createServer({}, app)
         .listen(port, function () {
         console.log("Server running at https://localhost:".concat(port, "/"));
     });
