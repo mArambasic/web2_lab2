@@ -1,0 +1,85 @@
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+<style>
+  table {
+    width: 80%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+  }
+
+  th, td {
+    padding: 8px;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+  }
+</style>
+
+
+<%- include('partials/header') -%>
+
+  <h1 class="text-4xl mb-4">COMPETITONS</h1>
+
+  <table id="competitionsTableId">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Shareable link</th>
+      </tr>
+    </thead>
+    <tbody id="competitionsTable"></tbody>
+  </table>
+
+<%- include('partials/footer') -%>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    function fetchCompetitions() {
+      var user = <%- JSON.stringify(locals.user) %>;
+      var baseURL = <%- JSON.stringify(locals.baseURL) %>;
+
+      if (!user) return;
+
+      var userId = user.sub;
+
+      axios.get(`https://web2-lab1-back.onrender.com/api/getCompetitions/${userId}`)
+        .then((response) => {
+          const competitions = response.data;
+          console.log('Competitions:', competitions);
+
+          if (!Array.isArray(competitions)) {
+            window.location.href = '/';
+            return;
+          }
+
+          var competitionsTable = document.getElementById('competitionsTable');
+
+          competitions.forEach(function(competition) {
+            var competitionName = competition.name;
+            var competitionLink = baseURL + "/competition/" + competition.link;
+
+            var row = document.createElement('tr');
+            var nameCell = document.createElement('td');
+            var linkCell = document.createElement('td');
+
+            nameCell.textContent = competitionName;
+
+            var link = document.createElement('a');
+            link.href = competitionLink;
+            link.textContent = competitionLink;
+            link.style.color = 'blue';
+
+            linkCell.appendChild(link);
+
+            row.appendChild(nameCell);
+            row.appendChild(linkCell);
+            competitionsTable.appendChild(row);
+          });
+      })
+      .catch((error) => {
+        console.error('Error fetching competitions:', error);
+      });
+    }
+
+    fetchCompetitions();
+  });
+</script>
