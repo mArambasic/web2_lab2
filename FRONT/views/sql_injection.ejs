@@ -16,19 +16,32 @@
 <div id="results"></div>
 
 <script>
-    // JavaScript funkcija za izvršavanje pretraživanja
-    function search() {
-        // Dohvati vrijednost polja za unos
+
+    function search_unsafe() {
         var query = document.getElementById("query").value;
-        // Izvrši SQL upit
-        // NE KORISTIMO PARAMETRE, ŠTO OMOGUĆAVA SQL INJECTION NAPAD
+
         var xhr = new XMLHttpRequest();
         xhr.open("POST", "search.php", true);
         xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
         xhr.send("query=" + query);
-        // Postavi povratnu vrijednost
+
         xhr.onload = function() {
-            // Postavi sadržaj elementa s id-om "results" na povratnu vrijednost HTTP zahtjeva
+            document.getElementById("results").innerHTML = xhr.responseText;
+        };
+    }
+    function search_safe() {
+        var query = document.getElementById("query").value;
+
+        if (!query.match(/^[a-zA-Z0-9_-]+$/)) {
+            alert("Unijeli ste neispravan unos.");
+            return;
+        }
+
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "search.php", true);
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        xhr.send("query=" + encodeURIComponent(query));
+        xhr.onload = function() {
             document.getElementById("results").innerHTML = xhr.responseText;
         };
     }
