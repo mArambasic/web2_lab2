@@ -1,10 +1,9 @@
 <?php
-
-$host = process.env.HOST;
-$port = process.env.PORT;
-$dbname = process.env.DB_NAME;
-$user = process.env.DB_USER;
-$password = process.env.DB_PASSWORD;
+$host = getenv('DB_HOST');
+$port = getenv('DB_PORT');
+$dbname = getenv('DB_NAME');
+$user = getenv('DB_USER');
+$password = getenv('DB_PASSWORD');
 
 $conn = pg_connect("host=$host port=$port dbname=$dbname user=$user password=$password");
 
@@ -14,15 +13,14 @@ if (!$conn) {
 
 $query = $_POST['query'];
 
-$sql = "SELECT * FROM your_table WHERE column_name ILIKE '%$query%'";
+$sql = $query;
 $result = pg_query($conn, $sql);
 
 if ($result) {
-    while ($row = pg_fetch_assoc($result)) {
-        echo "ID: " . $row["id"] . " - Name: " . $row["name"] . "<br>";
-    }
+    $rows = pg_fetch_all($result);
+    echo json_encode($rows);
 } else {
-    echo "No results found";
+    echo json_encode(['error' => 'No results found']);
 }
 
 pg_close($conn);
