@@ -19,7 +19,9 @@
     }
 </style>
 
-<div id="recaptchaContainer"></div>
+<script src="https://www.google.com/recaptcha/enterprise.js?render=6LePiAwpAAAAAPE9DB8P6F0k442T2Kbtc7O6JJ63" async defer></script>
+<script src="https://www.gstatic.com/recaptcha/releases/enterprise.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@google-cloud/recaptcha-enterprise"></script>
 
 <h1 class="text-4xl">Broken Authentication</h1>
 <br>
@@ -28,7 +30,7 @@
     <p>Pressing the "Enable vulnerability" checkbox disables the following security measures:</p>
     <p>1) Limiting login attempts</p>
     <p>2) Not ignoring captcha</p>
-    <p>3) Non specific alerts on failed login attempts (example: "No user found" instead of "Incorrect username")</p>
+    <p>3) Non-specific alerts on failed login attempts (example: "No user found" instead of "Incorrect username")</p>
 </div>
 <br>
 
@@ -37,7 +39,7 @@
     <br>  <br>
     Username: <input type="text" name="username" id="username"> <br>
     Password: <input type="text" name="password" id="password"> <br> <br>
-    <div class="g-recaptcha" data-sitekey="6LePiAwpAAAAAPE9DB8P6F0k442T2Kbtc7O6JJ63"></div>
+    <div id="recaptchaContainer"></div>
     <br>
     <input type="submit" value="LOGIN" id="loginBtn">
 </form>
@@ -74,8 +76,7 @@
         var currentAttempts = localStorage.getItem('loginAttempts');
         localStorage.setItem('loginAttempts', ++currentAttempts);
 
-
-        grecaptcha.enterprise.render('recaptchaContainer', { sitekey: '6LePiAwpAAAAAPE9DB8P6F0k442T2Kbtc7O6JJ63', action: 'login' })
+        grecaptcha.enterprise.execute('6LePiAwpAAAAAPE9DB8P6F0k442T2Kbtc7O6JJ63', { action: 'login' })
             .then(function (recaptchaToken) {
                 console.log('reCAPTCHA Token:', recaptchaToken);
 
@@ -98,6 +99,14 @@
                         alert("No user found");
                     }
                 }
+
+                // Call createAssessment after a successful login attempt
+                createAssessment({
+                    projectID: "web2lab2-1699824097556",
+                    recaptchaKey: "6LePiAwpAAAAAPE9DB8P6F0k442T2Kbtc7O6JJ63",
+                    token: recaptchaToken,
+                    recaptchaAction: 'login'
+                });
             })
             .catch(function (error) {
                 console.error('reCAPTCHA Error:', error);
@@ -106,7 +115,7 @@
     }
 
     function tryLogin() {
-        // not logging in, just using the function to show diffrent vulnerabilities
+        // not logging in, just using the function to show different vulnerabilities
         var username = document.getElementById("username");
         var password = document.getElementById("password");
 
@@ -119,6 +128,49 @@
             return "found user"
         }
         else return "incorrect password"
+    }
+</script>
+
+<script>
+    const { RecaptchaEnterpriseServiceClient } = require('@google-cloud/recaptcha-enterprise');
+
+    async function createAssessment({
+      projectID = "web2lab2-1699824097556",
+      recaptchaKey = "6LePiAwpAAAAAPE9DB8P6F0k442T2Kbtc7O6JJ63",
+      token = "action-token",
+      recaptchaAction = "action-name",
+    }) {
+      const client = new RecaptchaEnterpriseServiceClient();
+      const projectPath = client.projectPath(projectID);
+
+      const request = {
+        assessment: {
+          event: {
+            token: token,
+            siteKey: recaptchaKey,
+          },
+        },
+        parent: projectPath,
+      };
+
+      const [ response ] = await client.createAssessment(request);
+
+      if (!response.tokenProperties.valid) {
+        console.log(`The CreateAssessment call failed because the token was: ${response.tokenProperties.invalidReason}`);
+        return null;
+      }
+
+      if (response.tokenProperties.action === recaptchaAction) {
+        console.log(`The reCAPTCHA score is: ${response.riskAnalysis.score}`);
+        response.riskAnalysis.reasons.forEach((reason) => {
+          console.log(reason);
+        });
+
+        return response.riskAnalysis.score;
+      } else {
+        console.log("The action attribute in your reCAPTCHA tag does not match the action you are expecting to score");
+        return null;
+      }
     }
 </script>
 
