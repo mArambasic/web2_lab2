@@ -34,9 +34,9 @@
 
 <form onsubmit="return login()">
     <input type="checkbox" name="unsafe" id="unsafeCheckbox"> Enable vulnerability
-    <br>
+    <br>  <br>
     Username: <input type="text" name="username" id="username"> <br>
-    Password: <input type="text" name="password" id="password"> <br>
+    Password: <input type="text" name="password" id="password"> <br> <br>
     <div class="g-recaptcha" data-sitekey="6LePiAwpAAAAAPE9DB8P6F0k442T2Kbtc7O6JJ63"></div>
     <br>
     <input type="submit" value="LOGIN" id="loginBtn">
@@ -75,7 +75,7 @@
         localStorage.setItem('loginAttempts', ++currentAttempts);
 
 
-        grecaptcha.enterprise.execute('6LePiAwpAAAAAPE9DB8P6F0k442T2Kbtc7O6JJ63', { action: 'login' })
+        grecaptcha.enterprise.render('recaptchaContainer', { sitekey: '6LePiAwpAAAAAPE9DB8P6F0k442T2Kbtc7O6JJ63', action: 'login' })
             .then(function (recaptchaToken) {
                 console.log('reCAPTCHA Token:', recaptchaToken);
 
@@ -106,11 +106,18 @@
     }
 
     function tryLogin() {
-        // not logging in, just using to show diffrent vulnerabilities
+        // not logging in, just using the function to show diffrent vulnerabilities
+        var username = document.getElementById("username");
+        var password = document.getElementById("password");
+
         console.log("trying to log in");
 
         var currentAttempts = localStorage.getItem('loginAttempts');
         if(currentAttempts % 2 == 0) return "incorrect username"
+        else if(username === "test") {
+            localStorage.setItem('loginAttempts', 0);
+            return "found user"
+        }
         else return "incorrect password"
     }
 </script>
