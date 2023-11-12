@@ -20,20 +20,21 @@
 <div class="hint-box">
     <p>Pressing use unsafe search allows.....</p>
 </div>
+<br>
 
 <form action="login" method="post" onsubmit="return login()">
     Username: <input type="text" name="username" id="username"> 
     <br>
     Password: <input type="text" name="password" id="password">
     <br>
+    <input type="submit" value="LOGIN" id="loginBtn">
     <input type="checkbox" name="unsafe" id="unsafeCheckbox"> Use Unsafe Search
-    <br>
-    <input type="submit" value="SEARCH">
 </form>
 
 <script>
+    var loginAttempts = 0;
 
-    function search() {
+    function login() {
         var unsafeCheckbox = document.getElementById("unsafeCheckbox");
         if (unsafeCheckbox.checked) {
             login_unsafe();
@@ -43,11 +44,35 @@
     }
 
     function login_unsafe() {
+        loginAttempts++;
+
+        var loginSucess = tryLogin()
+
         console.log("login unsafe");
     }
 
     function login_safe() {
+        loginAttempts++;
+
+        var loginSucess = tryLogin()
+
+        if(!loginSucess && loginAttempts >= 5) {
+            alert("Too many failed login attempts. Please wait 30 seconds before trying again.");
+
+            document.getElementById("loginBtn").disabled = true;
+
+            setTimeout(function() {
+                document.getElementById("loginBtn").disabled = false;
+                loginAttempts = 0;
+            }, 30000); 
+        }
+
         console.log("login safe");
+    }
+
+    function tryLogin() {
+        console.log("trying to log in");
+        return false;
     }
 </script>
 
