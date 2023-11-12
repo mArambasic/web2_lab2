@@ -1,0 +1,197 @@
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+<%- include('partials/header') -%>
+
+<h1 class="text-4xl mb-4" id="competitionNameId"></h1>
+<div id="roundsTable"></div>
+<div id="scoringTable"></div>
+
+<%- include('partials/footer') -%>
+
+<style>
+  table {
+    width: 80%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+  }
+
+  th, td {
+    padding: 8px;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+  }
+
+  button {
+    background-color: blue;
+    color: white;
+    padding: 10px 20px;
+  }
+</style>
+
+<script>
+  const ScoringEnum = {
+    NOT_FINISHED: "NOT_FINISHED",
+    WIN: "WIN",
+    LOSS: "LOSS",
+    DRAW: "DRAW",
+  };
+
+  document.addEventListener("DOMContentLoaded", function () {
+
+    const link = "<%= link %>";
+
+    var user = <%- locals.user ? JSON.stringify(locals.user) : "null" %>;
+    let userId = user ? user.sub : null;
+
+    function fetchCompetition() {
+      axios.get(`https://web2-lab1-back.onrender.com/api/getCompetitionByLink/${link}`)
+        .then((response) => {
+          const competition = response.data;
+
+          if (!competition || competition.length === 0) {
+            window.location.href = "/";
+            return;
+          }
+
+
+          const competitionUserId = competition.userId
+          const competitionName = competition.name;
+          const rounds = competition.rounds;
+          const scoring = competition.scoring;
+          const competitors = competition.competitors;
+
+
+          console.log('UserID:', userId);
+          console.log('CompetitionUserid:', competitionUserId);
+
+          console.log('Competition Name:', competitionName);
+          const competitionNameId = document.getElementById("competitionNameId");
+          competitionNameId.textContent = competitionName;
+
+          const roundsTable = document.getElementById("roundsTable");
+          const table = document.createElement("table");
+          table.className = "border-collapse border border-blue-800 m-4";
+
+          const headerRow = table.insertRow();
+          const roundHeaderCell = headerRow.insertCell();
+          roundHeaderCell.textContent = "Round";
+          const matchHeaderCell = headerRow.insertCell();
+          matchHeaderCell.textContent = "Matches";
+          const resultHeaderCell = headerRow.insertCell();
+          resultHeaderCell.textContent = "Result";
+
+          rounds.forEach((round, index) => {
+            round.matches.forEach((match) => {
+              const roundRow = table.insertRow();
+              const roundCell = roundRow.insertCell();
+
+              roundCell.textContent = `${index + 1}`;
+
+              const matchCell = roundRow.insertCell();
+              matchCell.textContent = match.player1 + " vs " + match.player2;
+
+              const resultCell = roundRow.insertCell();
+
+              if (userId === competition.userId) {
+                const scoringSelect = document.createElement("select");
+                scoringSelect.name = `result_${match.matchId}`;
+
+                for (const scoringType of Object.values(ScoringEnum)) {
+                  const option = document.createElement("option");
+                  option.value = scoringType;
+                  option.text = scoringType;
+                  
+                  if (scoringType === match.scoringEnum) {
+                    option.selected = true;
+                  }
+
+                  scoringSelect.appendChild(option);
+                }
+
+                resultCell.appendChild(scoringSelect);
+            } else {
+              const notCreatorText = document.createElement("p");
+              notCreatorText.textContent = match.scoringEnum;
+              resultCell.appendChild(notCreatorText);
+            }
+            });
+          });
+
+          roundsTable.appendChild(table);
+
+          if(userId === competitionUserId) {
+            const saveChangesDiv = document.createElement("div");
+            saveChangesDiv.className = "text-center";
+
+            const saveChangesButton = document.createElement("button");
+            saveChangesButton.id = "saveChangesButton";
+            saveChangesButton.textContent = "Save Changes";
+            saveChangesButton.onclick = saveChanges;
+
+            saveChangesDiv.appendChild(saveChangesButton);
+            roundsTable.appendChild(saveChangesDiv);
+          }
+
+          const scoringTable = document.getElementById("scoringTable");
+          const table2 = document.createElement("table");
+          table2.className = "border-collapse border border-blue-800 m-4";
+
+          const headerCompetitors = table2.insertRow();
+          const competitorsHeaderCell = headerCompetitors.insertCell();
+          competitorsHeaderCell.textContent = "Competitors";
+          const scoreHeaderCell = headerCompetitors.insertCell();
+          scoreHeaderCell.textContent = "Scores";
+
+          competitors.forEach((competitor) => {
+            const row = table2.insertRow();
+            const competitorCell = row.insertCell();
+            competitorCell.textContent = competitor.name;
+
+            const scoreCell = row.insertCell();
+            scoreCell.textContent = competitor.score;
+          });
+
+          scoringTable.appendChild(table2);
+
+          console.log('Rounds:', rounds);
+          console.log('Scores:', scoring);
+        })
+        .catch((error) => {
+          console.error('Error fetching competitions:', error);
+        });
+    }
+
+    fetchCompetition();
+  });
+
+  function saveChanges() {
+    console.log("saving changes");
+    const matchData = [];
+
+    const resultSelectElements = document.querySelectorAll('select[name^="result_"]');
+  
+    resultSelectElements.forEach((select) => {
+      const matchId = select.name.replace('result_', '');
+      let result = select.value;
+
+      console.log('RESULT:', result);
+      console.log('MATCH ID:', matchId);
+
+      matchData.push({ matchId, result });
+    });
+
+    console.log("Matchdata:", matchData);
+
+
+    axios.post(
+      'https://web2-lab1-back.onrender.com/api/saveMatchChanges',
+       matchData 
+    )
+    .then((response) => {
+      console.log('Matches saved:', response.data);
+    })
+    .catch((error) => {
+      console.error('Error saving matches:', error);
+    });
+  }
+</script>

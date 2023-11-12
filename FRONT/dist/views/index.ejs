@@ -1,16 +1,114 @@
 <%- include('partials/header') -%>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
-<h1 class="text-4xl">Hello World</h1>
+<style>
+    input[type="text"] {
+      border: 1px solid #000000; 
+      padding: 5px; 
 
-<% if (locals.isAuthenticated) { %>
-    <p>You are logged in. <a href="/competitions" class="underline">View your competitions</a>. or enter new ones</p>
-    <form action="/newCompetition" method="post">
-        <label for="userInput">Enter Text:</label>
-        <input type="text" id="userInput" name="userInput">
-        <button type="submit">Submit</button>
-    </form>
-<% } else { %>
-    <p>You are not logged in. Log in to enter your match. <a href="/login" class="underline">Login</a>.</p>
-<% } %>
+    }
+  </style>
 
+<script>
+    function validateForm() {
+        var competitionName = document.getElementById("competitionName");
+        var competitors = document.getElementById("competitors");
+        var pointDistribution = document.getElementById("pointDistribution");
+
+        if(competitionName === null || competitors === null || pointDistribution === null )  {
+            alert("Please input all data");
+            return false; 
+        } 
+
+        var competitionNameValue = competitionName.value;
+        var competitorsValue = competitors.value;
+        var pointDistributionValue = pointDistribution.value;
+        var user = <%- JSON.stringify(locals.user) %>;
+
+       if(competitionNameValue === null || competitorsValue === null || pointDistributionValue === null
+            || competitionNameValue === "" ||competitorsValue === "" || pointDistributionValue === "")  {
+            alert("Please input all data");
+            return false; 
+        }
+
+        var competitorsSplit = competitorsValue.split(",");
+        if(competitorsSplit.length < 4 || competitorsSplit.length > 8) {
+            alert("Hint: insert 4-8 competitors separated by a comma");
+            return false; 
+        }
+
+        var pointDistributionSplit = pointDistributionValue.split("/");
+        if(pointDistributionSplit.length != 3) {
+            alert("Hint: point distrubution format is win/loss/draw");
+            return false; 
+        }
+
+        if (!pointDistributionSplit.every(value => !isNaN(value))) {
+            alert("Hint: point distribution values must be numbers");
+            return false;
+        }
+        
+        submitNewMatch(competitionNameValue, competitorsValue, pointDistributionValue, user)
+        return true;
+    }
+
+    function submitNewMatch(competitionName, competitors, pointDistribution, user) {
+        var userId = user.sub;
+
+        const newMatchData = {
+            competitionName: competitionName,
+            competitors: competitors,
+            pointDistribution: pointDistribution,
+            userId: userId
+        };
+
+
+        axios.post(
+            `https://web2-lab1-back.onrender.com/api/newCompetition`,
+            newMatchData
+        )
+        .then((res) => {
+            if (res.status === 200) {
+                alert("New competition created successfully");
+            } else {
+                alert("Failed to create a new competition");
+            }
+        })
+        .catch((error) => {
+            alert("Error: " + error.message);
+        });
+    }
+
+  </script>
+
+
+<div id="root">
+    <% if (locals.isAuthenticated) { %>
+        <p> <a href="/competitions" class="underline">View your competitions</a> or enter a new one!</p>
+        
+        <h1 class="text-4xl">Enter new competition</h1>
+
+        <form onsubmit="return validateForm()">
+            <table>
+                <tr>
+                    <td>Name:</td>
+                    <td><input type="text" id = "competitionName" name="competitionName" maxlength="50"></td>
+                </tr>
+                <tr>
+                    <td>Competitors (a,b,c,...):</td>
+                    <td><input type="text" id = "competitors" name="competitors"></td>
+                </tr>
+                <tr>
+                    <td>Point distribution (win/loss/draw):</td>
+                    <td><input type="text" id = "pointDistribution" name="pointDistribution" ></td>
+                    </tr>
+                <tr>
+                    <td colspan="2"><input type="submit" value="Submit" ></td>
+                </tr>
+            </table>
+        </form>
+    <% } else { %>
+        <p>You are not logged in. Log in to view previously created competitions or enter a new one. <a href="/login" class="underline">Login</a>.</p>
+    <% } %>
+    </div>
 <%- include('partials/footer') -%>
