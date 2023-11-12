@@ -19,7 +19,7 @@
     }
 </style>
 
-<script src="https://www.google.com/recaptcha/enterprise.js?render=6LePiAwpAAAAAPE9DB8P6F0k442T2Kbtc7O6JJ63" async defer></script>
+<div id="recaptchaContainer"></div>
 
 <h1 class="text-4xl">Broken Authentication</h1>
 <br>
@@ -74,24 +74,25 @@
         var currentAttempts = localStorage.getItem('loginAttempts');
         localStorage.setItem('loginAttempts', ++currentAttempts);
 
+
         grecaptcha.enterprise.execute('6LePiAwpAAAAAPE9DB8P6F0k442T2Kbtc7O6JJ63', { action: 'login' })
             .then(function (recaptchaToken) {
                 console.log('reCAPTCHA Token:', recaptchaToken);
 
-                var loginSuccess = tryLogin() !="incorrect password" && tryLogin() !="incorrect password";
+                var loginSuccess = tryLogin() !== "incorrect password" && tryLogin() !== "incorrect password";
 
                 console.log(loginSuccess, currentAttempts)
 
                 var loginBtn = document.getElementById("loginBtn");
                 if (!loginSuccess && currentAttempts >= 5) {
-                    if(currentAttempts >= 5) {
+                    if (currentAttempts >= 5) {
                         alert("Too many failed login attempts. Please wait 30 seconds before trying again.");
 
                         loginBtn.disabled = true;
 
                         setTimeout(function () {
                             loginBtn.disabled = false;
-                            sessionStorage.setItem('loginAttempts', 0);
+                            localStorage.setItem('loginAttempts', 0);
                         }, 30000);
                     } else {
                         alert("No user found");
@@ -101,6 +102,7 @@
             .catch(function (error) {
                 console.error('reCAPTCHA Error:', error);
             });
+
     }
 
     function tryLogin() {
