@@ -57,6 +57,8 @@
 
         var loginSucess = tryLogin()
 
+        console.log(loginSucess, loginAttempts)
+
         if(!loginSucess && loginAttempts >= 5) {
             alert("Too many failed login attempts. Please wait 30 seconds before trying again.");
 
