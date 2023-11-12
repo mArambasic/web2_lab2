@@ -33,7 +33,11 @@
 </form>
 
 <script>
-    var loginAttempts = 0;
+    var loginAttempts = localStorage.getItem('loginAttempts');
+    if (loginAttempts === null) {
+        loginAttempts = 0;
+        localStorage.setItem('loginAttempts', loginAttempts);
+    }
 
     function login() {
         var unsafeCheckbox = document.getElementById("unsafeCheckbox");
