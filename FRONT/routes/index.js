@@ -9,7 +9,13 @@ router.get('/', function (req, res, next) {
 
 router.get('/sql_injection', function (req, res, next) {
   res.render('sql_injection', {
-    title: 'Sql injection'
+    title: 'Sql Injection'
+  });
+});
+
+router.get('/broken_auth', function (req, res, next) {
+  res.render('broken_auth', {
+    title: 'Broken Authentication'
   });
 });
 
