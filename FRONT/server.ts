@@ -26,8 +26,15 @@ const apiBaseURL = 'https://localhost/8081'
 const baseURL = externalUrl || `https://localhost:${port}`
 
 const config = {
+  authRequired: false,
+  auth0Logout: true,
+  secret: process.env.CLIENT_SECRET,
   baseURL: baseURL,
+  clientID: process.env.CLIENT_ID,
+  issuerBaseURL: 'https://dev-y7q23kiz1uhksjri.eu.auth0.com',
 };
+
+app.use(auth(config));
 
 // Middleware to make the `user` object available for all views
 app.use(function (req, res, next) {
@@ -41,7 +48,7 @@ app.use('/', router);
 
 
 if (externalUrl) {
-  const hostname = process.env.HOST;
+  const hostname = process.env.HOST; //ne 127.0.0.1
   console.log(hostname + " " + port + " " + externalUrl) 
   app.listen(port, hostname, () => {
     console.log(`Server locally running at http://${hostname}:${port}/ and from
@@ -50,6 +57,8 @@ if (externalUrl) {
   )
 } else {
   https.createServer({
+    key: fs.readFileSync('server.key'),
+    cert: fs.readFileSync('server.cert')
     }, app)
   .listen(port, function () {
     console.log(`Server running at https://localhost:${port}/`);

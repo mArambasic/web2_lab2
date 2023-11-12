@@ -1,0 +1,24 @@
+WEB APLIKACIJA, dvije ranjivosti web-aplikacija
+
+IMPLEMENTIRATI:
+- funkcionalnost kojom se omogućuje ranjivost
+- funkcionalnost kojom se onemogućuje ranjivost
+- Npr. napraviti "prekidač" (npr. checkbox, tipka ili padajući izbornik) 
+	kojim se ranjivost po želji uključuje i isključuje.
+
+KORISNIČKO SUČELJE:
+- napadi se mogu pokrenuti kroz sučelje web-aplikacije
+- učinak napada bude vidljiv u korisničkom sučelju 
+	(npr. prikladnim ispisom niza izvršenih akcija, ispisom izmijenjenog sadržaja baze podataka, 
+	prikazom javascript:alert standardnog dijaloga s podacima o korisničkoj sjednici document.cookie itd.).
+- Za eventualno slanje ili primanje e-mail poruka sa malicioznim linkom koristiti neki od 	
+	servisa s privremenim poštanskim sandučićima (npr. https://www.mailinator.com/).
+
+NAPOMENA AKO NA RADI NA CLOUD-u:
+- Ako iz nekog razloga nećete moći izvesti ranjivost u cloud instalaciji 
+ 	(npr. ako sustav sam blokira brute-force napad ili odabrani radni okvir onemogućuje SQL umetanje)
+  -> kratke i jasne upute kako instalirati i pokrenuti sustav lokalno, po mogućnosti što jednostavnije npr. npm i && npm run server.
+
+RANJIVOSTI:
+- SQL umetanje (SQL Injection) - implementirati barem tautologiju
+- Loša autentifikacija (Broken Authentication)

@@ -1,0 +1,7 @@
+ISPORUCITI:
+- adresu git repozitorija s web-aplikacijom (repozitorij može biti privatni, ali omogućiti pravo pristupa nastavnicima). Korisnički računi nastavnika za GitHub i Gitlab su : mekterovic, mhorvat i boris612
+- adresu web-aplikacije
+- popis implementiranih ranjivosti - kratka lista od <= 2 zapisa
+- napomene (npr. "sve je uspješno implementirano", ili "nisam uspio/-la implementirati", itd.)
+- kratke upute kako pokrenuti i isprobati aplikaciju 
+	(ako je potrebno, navesti korisnička imena potrebna za testiranje)
