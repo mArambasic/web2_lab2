@@ -87,8 +87,8 @@
             loginBtn.disabled = true;
 
             setTimeout(function () {
-                loginBtn.disabled = false;
-                localStorage.setItem('loginAttempts', 0);
+                var currentAttempts = 0;
+                localStorage.setItem('loginAttempts', ++currentAttempts);
             }, 30000);
         }
 
