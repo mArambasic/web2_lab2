@@ -1,5 +1,5 @@
 {
-  "name": "auth0-express-webapp-sample",
+  "name": "web2_lab2",
   "scripts": {
     "build": "npm run clean; tsc; npm run copy-views; npm run copy-views",
     "clean": "rm -rf dist",
