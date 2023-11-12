@@ -50,8 +50,8 @@
     }
 
     function login_unsafe() {
-        var loginAttempts = localStorage.getItem('loginAttempts');
-        localStorage.setItem('loginAttempts', loginAttempts++);
+        var currentAttempts = localStorage.getItem('loginAttempts');
+        localStorage.setItem('loginAttempts', ++currentAttempts);
 
         var loginSucess = tryLogin()
 
@@ -59,8 +59,8 @@
     }
 
     function login_safe() {
-        var loginAttempts = localStorage.getItem('loginAttempts');
-        localStorage.setItem('loginAttempts', loginAttempts++);
+        var currentAttempts = localStorage.getItem('loginAttempts');
+        localStorage.setItem('loginAttempts', ++currentAttempts);
 
         var loginSucess = tryLogin()
 
@@ -73,7 +73,6 @@
 
             setTimeout(function() {
                 document.getElementById("loginBtn").disabled = false;
-                var loginAttempts = localStorage.getItem('loginAttempts');
                 localStorage.setItem('loginAttempts', 0);
             }, 30000); 
         }
