@@ -119,8 +119,8 @@
 
     function tryLogin() {
         // not logging in, just using the function to show different vulnerabilities
-        var username = document.getElementById("username");
-        var password = document.getElementById("password");
+        var username = document.getElementById("username").value;
+        var password = document.getElementById("password").value;
 
         console.log("trying to log in");
         console.log(username, password)
@@ -145,8 +145,8 @@
     }
 
     function registration_unsafe() {
-        var username = document.getElementById("usernameRegistration");
-        var password = document.getElementById("passwordRegistration");
+        var username = document.getElementById("usernameRegistration").value;
+        var password = document.getElementById("passwordRegistration").value;
         
         register(username, hashedPassword);
     }
@@ -156,7 +156,7 @@
         const minimumLength = 8;
         const maximumLength = 64;
 
-        var username = document.getElementById("usernameRegistration");
+        var username = document.getElementById("usernameRegistration").value;
         var password = document.getElementById("passwordRegistration").value;
         var passwordLength = password.length;
 
