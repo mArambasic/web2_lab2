@@ -8,14 +8,24 @@
     }
   </style>
 
-<form action="search.php" method="post">
+<form action="search" method="post" onsubmit="return search()">
     <input type="text" name="query" id="query">
+    <input type="checkbox" name="unsafe" id="unsafeCheckbox"> Use Unsafe Search
     <input type="submit" value="Pretraži">
 </form>
 
 <div id="results"></div>
 
 <script>
+
+    function search() {
+        var unsafeCheckbox = document.getElementById("unsafeCheckbox");
+        if (unsafeCheckbox.checked) {
+            search_unsafe();
+        } else {
+            search_safe();
+        }
+    }
 
     function search_unsafe() {
         var query = document.getElementById("query").value;
