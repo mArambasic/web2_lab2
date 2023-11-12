@@ -1,0 +1,29 @@
+<%- include('partials/header') -%>
+
+<form action="search.php" method="post">
+    <input type="text" name="query" id="query">
+    <input type="submit" value="Pretraži">
+</form>
+
+<div id="results"></div>
+
+<script>
+    // JavaScript funkcija za izvršavanje pretraživanja
+    function search() {
+        // Dohvati vrijednost polja za unos
+        var query = document.getElementById("query").value;
+        // Izvrši SQL upit
+        // NE KORISTIMO PARAMETRE, ŠTO OMOGUĆAVA SQL INJECTION NAPAD
+        var xhr = new XMLHttpRequest();
+        xhr.open("POST", "search.php", true);
+        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
+        xhr.send("query=" + query);
+        // Postavi povratnu vrijednost
+        xhr.onload = function() {
+            // Postavi sadržaj elementa s id-om "results" na povratnu vrijednost HTTP zahtjeva
+            document.getElementById("results").innerHTML = xhr.responseText;
+        };
+    }
+</script>
+
+<%- include('partials/footer') -%>

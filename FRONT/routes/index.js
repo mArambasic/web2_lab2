@@ -25,4 +25,10 @@ router.get('/competition/:link', function (req, res, next) {
   });
 });
 
+router.get('/sql_injection', function (req, res, next) {
+  res.render('sql_injection', {
+    title: 'Sql injection'
+  });
+});
+
 module.exports = router;
