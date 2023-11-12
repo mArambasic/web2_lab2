@@ -18,7 +18,8 @@
 <br>
 
 <div class="hint-box">
-    <p>Pressing use unsafe search allows.....</p>
+    <p>Pressing the "Enable vulnerability" checkbox disables the following security messures:</p>
+    <p>1) Limiting login attempts</p>
 </div>
 <br>
 
@@ -36,10 +37,7 @@
     var loginAttempts = localStorage.getItem('loginAttempts');
     if (loginAttempts === null) {
         loginAttempts = 0;
-        localStorage.setItem('loginAttempts', loginAttempts);
-        console.log('Initialized loginAttempts in localStorage');
-    } else {
-        console.log('Found existing loginAttempts in localStorage:', loginAttempts);
+        localStorage.setItem('loginAttempts', 0);
     }
 
     function login() {
@@ -52,7 +50,8 @@
     }
 
     function login_unsafe() {
-        loginAttempts++;
+        var loginAttempts = localStorage.getItem('loginAttempts');
+        localStorage.setItem('loginAttempts', loginAttempts++);
 
         var loginSucess = tryLogin()
 
@@ -60,7 +59,8 @@
     }
 
     function login_safe() {
-        loginAttempts++;
+        var loginAttempts = localStorage.getItem('loginAttempts');
+        localStorage.setItem('loginAttempts', loginAttempts++);
 
         var loginSucess = tryLogin()
 
@@ -73,7 +73,8 @@
 
             setTimeout(function() {
                 document.getElementById("loginBtn").disabled = false;
-                loginAttempts = 0;
+                var loginAttempts = localStorage.getItem('loginAttempts');
+                localStorage.setItem('loginAttempts', 0);
             }, 30000); 
         }
 
