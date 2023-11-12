@@ -2,23 +2,30 @@
 
 <style>
     input[type="text"] {
-      border: 1px solid #000000; 
-      padding: 5px; 
-
+        border: 1px solid #000000;
+        padding: 5px;
     }
+
     .hint-box {
         margin-top: 10px;
         padding: 10px;
         border: 1px solid #ccc;
         background-color: #f9f9f9;
     }
+    #loginBtn:disabled {
+        background-color: #861717;
+        color: #666666;
+        cursor: not-allowergb(255, 0, 0)
+    }
 </style>
+
+<script src="https://www.google.com/recaptcha/enterprise.js?render=6LePiAwpAAAAAPE9DB8P6F0k442T2Kbtc7O6JJ63" async defer></script>
 
 <h1 class="text-4xl">Broken Authentication</h1>
 <br>
 
 <div class="hint-box">
-    <p>Pressing the "Enable vulnerability" checkbox disables the following security messures:</p>
+    <p>Pressing the "Enable vulnerability" checkbox disables the following security measures:</p>
     <p>1) Limiting login attempts</p>
 </div>
 <br>
@@ -26,9 +33,9 @@
 <form onsubmit="return login()">
     <input type="checkbox" name="unsafe" id="unsafeCheckbox"> Enable vulnerability
     <br>
-    Username: <input type="text" name="username" id="username"> 
-    <br>
-    Password: <input type="text" name="password" id="password">
+    Username: <input type="text" name="username" id="username"> <br>
+    Password: <input type="text" name="password" id="password"> <br>
+    <div class="g-recaptcha" data-sitekey="6LePiAwpAAAAAPE9DB8P6F0k442T2Kbtc7O6JJ63"></div>
     <br>
     <input type="submit" value="LOGIN" id="loginBtn">
 </form>
@@ -37,7 +44,7 @@
     var loginAttempts = localStorage.getItem('loginAttempts');
     if (loginAttempts === null) {
         loginAttempts = 0;
-        localStorage.setItem('loginAttempts', 0);
+        localStorage.setItem('loginAttempts', loginAttempts);
     }
 
     function login() {
@@ -47,13 +54,14 @@
         } else {
             login_safe();
         }
+        return false; 
     }
 
     function login_unsafe() {
         var currentAttempts = localStorage.getItem('loginAttempts');
         localStorage.setItem('loginAttempts', ++currentAttempts);
 
-        var loginSucess = tryLogin()
+        var loginSuccess = tryLogin();
 
         console.log("login unsafe");
     }
@@ -62,19 +70,26 @@
         var currentAttempts = localStorage.getItem('loginAttempts');
         localStorage.setItem('loginAttempts', ++currentAttempts);
 
-        var loginSucess = tryLogin()
+        var recaptchaResponse = grecaptcha.getResponse(); 
+        if (!recaptchaResponse) {
+            alert("Please complete the reCAPTCHA.");
+            return false;
+        }
 
-        console.log(loginSucess, loginAttempts)
+        var loginSuccess = tryLogin();
 
-        if(!loginSucess && loginAttempts >= 5) {
+        console.log(loginSuccess, currentAttempts)
+
+        var loginBtn = document.getElementById("loginBtn");
+        if (!loginSuccess && currentAttempts >= 5) {
             alert("Too many failed login attempts. Please wait 30 seconds before trying again.");
 
-            document.getElementById("loginBtn").disabled = true;
+            loginBtn.disabled = true;
 
-            setTimeout(function() {
-                document.getElementById("loginBtn").disabled = false;
+            setTimeout(function () {
+                loginBtn.disabled = false;
                 localStorage.setItem('loginAttempts', 0);
-            }, 30000); 
+            }, 30000);
         }
 
         console.log("login safe");
@@ -85,7 +100,5 @@
         return false;
     }
 </script>
-
-
 
 <%- include('partials/footer') -%>
