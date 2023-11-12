@@ -6,9 +6,10 @@ const fs = require('fs');
 const logger = require('morgan');
 const path = require('path');
 const router = require('./routes/index');
-const { auth } = require('express-openid-connect');
 const { createProxyMiddleware } = require("http-proxy-middleware");
 const axios = require('axios');
+const { Pool } = require('pg')
+dotenv.config()
 
 dotenv.load();
 
@@ -22,24 +23,24 @@ app.use(express.json());
 
 const externalUrl = process.env.RENDER_EXTERNAL_URL;
 const port = externalUrl && process.env.PORT ? parseInt(process.env.PORT) : 4092;
-const apiBaseURL = 'https://localhost/8081'
 const baseURL = externalUrl || `https://localhost:${port}`
 
 const config = {
-  authRequired: false,
-  auth0Logout: true,
-  secret: process.env.CLIENT_SECRET,
-  baseURL: baseURL,
-  clientID: process.env.CLIENT_ID,
-  issuerBaseURL: 'https://dev-y7q23kiz1uhksjri.eu.auth0.com',
+  baseURL: baseURL
 };
 
-app.use(auth(config));
+const pool = new Pool({
+  user: process.env.DB_USER,
+  host: process.env.DB_HOST,
+  database: process.env.DB_NAME,
+  password: process.env.DB_PASSWORD,
+  port: 5432,
+  ssl : true
+  })
 
 // Middleware to make the `user` object available for all views
 app.use(function (req, res, next) {
   res.locals.user = req.oidc.user;
-  res.locals.apiBaseURL = apiBaseURL;
   res.locals.baseURL = baseURL;
   next();
 });
@@ -76,3 +77,8 @@ app.use(function (err, req, res, next) {
   res.status(err.status || 500);
   res.redirect('/');
 });
+
+export async function query(queryString) {
+  const results = await pool.query(queryString);
+  return results.rows.map(r => ({ ...r }));
+}

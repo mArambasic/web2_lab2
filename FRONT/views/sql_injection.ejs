@@ -18,14 +18,15 @@
 <br>
 
 <div class="hint-box">
-    <p>Pressing use unsafe search allows.....</p>
+    <p>SQL Injection</p>
+    <p>Pressing the "Enable vulnerability" checkbox disables the following security measures:</p>
 </div>
-
 <br>
 
 <form onsubmit="return search()">
-    <input type="text" name="query" id="query">
     <input type="checkbox" name="unsafe" id="unsafeCheckbox"> Enable vulnerability
+    <br>
+    <input type="text" name="query" id="query">
     <br>
     <input type="submit" value="SEARCH">
 </form>
@@ -44,40 +45,34 @@
     }
 
     function search_unsafe() {
-        var query = document.getElementById("query").value;
-
-        var xhr = new XMLHttpRequest();
-        xhr.open("POST", "search.php", true);
-        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-        xhr.send("query=" + query);
-
-        xhr.onload = function() {
-            document.getElementById("results").innerHTML = xhr.responseText;
-        };
+        console.log("searching unsafe")
+        
+        var queryString = document.getElementById("query").value;
+        query(queryString)
     }
     function search_safe() {
-        var query = document.getElementById("query").value;
-
-        if (!query.match(/^[a-zA-Z0-9_-]+$/)) {
-            alert("Unijeli ste neispravan unos.");
-            return;
-        }
-
-        if (!query.match(/^[a-zA-Z0-9_-]+$/)) {
-            alert("Unijeli ste neispravan unos.");
-            return;
-        }
-
-
         console.log("searching safe")
 
-        var xhr = new XMLHttpRequest();
-        xhr.open("POST", "search.php", true);
-        xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
-        xhr.send("query=" + encodeURIComponent(query));
-        xhr.onload = function() {
-            document.getElementById("results").innerHTML = xhr.responseText;
-        };
+        var queryString = document.getElementById("query").value;
+
+        if (!query.match(/^[a-zA-Z0-9_-]+$/)) {
+            alert("Unijeli ste neispravan unos.");
+            return;
+        }
+
+        query(queryString)
+    }
+
+    async function query(queryString) {
+        try {
+            const results = await query("SELECT * FROM your_table WHERE column_name = '" + queryString + "'");
+            console.log(results);
+
+            document.getElementById("results").innerHTML = results;
+
+        } catch (error) {
+            console.error('Error:', error);
+        }
     }
 </script>
 

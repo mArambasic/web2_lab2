@@ -79,12 +79,11 @@
     }
 
     function login_unsafe() {
-        var currentAttempts = localStorage.getItem('loginAttempts');
-        localStorage.setItem('loginAttempts', ++currentAttempts);
+        console.log("login unsafe");
+
+        localStorage.setItem('loginAttempts', 0);
 
         alert(tryLogin());
-
-        console.log("login unsafe");
     }
 
     function login_safe() {
@@ -95,10 +94,10 @@
 
         var loginSuccess = tryLogin() === "login success";
 
-        console.log(loginSuccess, currentAttempts)
-
         var loginBtn = document.getElementById("loginBtn");
         if (!loginSuccess) {
+            console.log("login attempts: " + currentAttempts)
+
             if (currentAttempts >= 5) {
                 alert("Too many failed login attempts. Please wait 30 seconds before trying again.");
 
@@ -109,6 +108,7 @@
                     localStorage.setItem('loginAttempts', 0);
                 }, 30000);
             } else {
+                localStorage.setItem('loginAttempts', 0);
                 alert("No user found");
             }
         } else {
@@ -127,10 +127,8 @@
 
         var currentAttempts = localStorage.getItem('loginAttempts');
 
-        if(username === "test" && password === "testPassword") {
-            localStorage.setItem('loginAttempts', 0);
-            return "login success"
-        } else if(username != "test" && password === "testPassword") return "incorrect username"
+        if(username === "test" && password === "testPassword") return "login success"
+        else if(username != "test" && password === "testPassword") return "incorrect username"
         else if(username === "test" && password != "testPassword") return "incorrect password"
         else return "both the username and the password are incorrect"
     }
@@ -146,6 +144,8 @@
     }
 
     function registration_unsafe() {
+        console.log("registration unsafe");
+
         var username = document.getElementById("usernameRegistration").value;
         var password = document.getElementById("passwordRegistration").value;
         
@@ -153,7 +153,8 @@
     }
 
     function registration_safe() {
-        const saltRounds = 10;
+        console.log("registration safe");
+
         const minimumLength = 8;
         const maximumLength = 64;
 
