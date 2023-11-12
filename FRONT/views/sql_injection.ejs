@@ -6,9 +6,21 @@
       padding: 5px; 
 
     }
-  </style>
+    .hint-box {
+        margin-top: 10px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        background-color: #f9f9f9;
+    }
+</style>
 
 <h1 class="text-4xl">SQL INJECTION</h1>
+<br>
+
+<div class="hint-box">
+    <p>This form allows you to perform a search. You can enter a search query in the text field. If you check the "Use Unsafe Search" option, the search will be performed without additional validation, which may be vulnerable to SQL injection. Please use it responsibly and avoid entering malicious input.</p>
+</div>
+
 <br>
 
 <form action="search" method="post" onsubmit="return search()">
