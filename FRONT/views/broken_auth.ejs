@@ -1,6 +1,56 @@
 <%- include('partials/header') -%>
 
-<h1 class="text-4xl">BROKEN AUTHENTICATION</h1>
+<style>
+    input[type="text"] {
+      border: 1px solid #000000; 
+      padding: 5px; 
+
+    }
+    .hint-box {
+        margin-top: 10px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        background-color: #f9f9f9;
+    }
+</style>
+
+<h1 class="text-4xl">Broken Authentication</h1>
 <br>
+
+<div class="hint-box">
+    <p>Pressing use unsafe search allows.....</p>
+</div>
+
+<form action="login" method="post" onsubmit="return login()">
+    Username: <input type="text" name="username" id="username"> 
+    <br>
+    Password: <input type="text" name="password" id="password">
+    <br>
+    <input type="checkbox" name="unsafe" id="unsafeCheckbox"> Use Unsafe Search
+    <br>
+    <input type="submit" value="SEARCH">
+</form>
+
+<script>
+
+    function search() {
+        var unsafeCheckbox = document.getElementById("unsafeCheckbox");
+        if (unsafeCheckbox.checked) {
+            login_unsafe();
+        } else {
+            login_safe();
+        }
+    }
+
+    function login_unsafe() {
+        console.log("login unsafe");
+    }
+
+    function login_safe() {
+        console.log("login safe");
+    }
+</script>
+
+
 
 <%- include('partials/footer') -%>

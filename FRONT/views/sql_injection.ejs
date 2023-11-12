@@ -14,7 +14,7 @@
     }
 </style>
 
-<h1 class="text-4xl">SQL INJECTION</h1>
+<h1 class="text-4xl">SQL Injection</h1>
 <br>
 
 <div class="hint-box">
@@ -62,6 +62,12 @@
             alert("Unijeli ste neispravan unos.");
             return;
         }
+
+        if (!query.match(/^[a-zA-Z0-9_-]+$/)) {
+            alert("Unijeli ste neispravan unos.");
+            return;
+        }
+
 
         console.log("searching safe")
 
