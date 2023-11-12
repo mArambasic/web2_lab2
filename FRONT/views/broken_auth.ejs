@@ -37,7 +37,7 @@
 <br>
 
 <form onsubmit="return login()">
-    <input type="checkbox" name="unsafe" id="unsafeCheckbox"> Enable vulnerability
+    <input type="checkbox" name="unsafe" id="unsafeCheckbox"> Enable vulnerabilities
     <br> 
     Username: <input type="text" name="username" id="username"> <br>
     Password: <input type="text" name="password" id="password"> <br> 
@@ -54,7 +54,7 @@
 <br>
 
 <form onsubmit="return registration()">
-    <input type="checkbox" name="unsafe" id="unsafeCheckboxRegistration"> Enable vulnerability
+    <input type="checkbox" name="unsafe" id="unsafeCheckboxRegistration"> Enable vulnerabilities
     <br> 
     Username: <input type="text" name="username" id="usernameRegistration"> <br>
     Password: <input type="text" name="password" id="passwordRegistration"> <br> 
@@ -126,6 +126,7 @@
         console.log(username, password)
 
         var currentAttempts = localStorage.getItem('loginAttempts');
+
         if(username === "test" && password === "testPassword") {
             localStorage.setItem('loginAttempts', 0);
             return "login success"
@@ -148,7 +149,7 @@
         var username = document.getElementById("usernameRegistration").value;
         var password = document.getElementById("passwordRegistration").value;
         
-        register(username, hashedPassword);
+        register(username, password);
     }
 
     function registration_safe() {
@@ -168,24 +169,16 @@
             return;
         }
 
-        hashPassword(password)
-        .then((hashedPassword) => {
-            register(username, hashedPassword);
-        })
-        .catch((error) => {
-            console.error('Hashing Error:', error);
-        });
-       
+        register(username, hashPassword(password))
     }
 
     function register(username, password) {
         alert("Register username: " + username + ", password: " + password)
     }
 
-    async function hashPassword(password) {
-        const salt = await bcrypt.genSalt(saltRounds);
-        const hash = await bcrypt.hash(password, salt);
-        return hash;
+    function hashPassword(password) {
+        //dummy function to show vulnerabilities
+        return "5f4dcc3b5aa765d61d8327deb882cf99";
     }
 </script>
 
