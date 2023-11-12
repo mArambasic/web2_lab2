@@ -37,6 +37,9 @@
     if (loginAttempts === null) {
         loginAttempts = 0;
         localStorage.setItem('loginAttempts', loginAttempts);
+        console.log('Initialized loginAttempts in localStorage');
+    } else {
+        console.log('Found existing loginAttempts in localStorage:', loginAttempts);
     }
 
     function login() {
