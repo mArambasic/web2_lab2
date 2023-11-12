@@ -48,7 +48,7 @@
         console.log("searching unsafe")
         
         var queryString = document.getElementById("query").value;
-        query(queryString)
+        queryAsync(queryString)
     }
     function search_safe() {
         console.log("searching safe")
@@ -60,12 +60,12 @@
             return;
         }
 
-        query(queryString)
+        queryAsync(queryString)
     }
 
-    async function query(queryString) {
+    async function queryAsync(queryString) {
         try {
-            const results = await query("SELECT * FROM your_table WHERE column_name = '" + queryString + "'");
+            const results = await query(queryString);
             console.log(results);
 
             document.getElementById("results").innerHTML = results;

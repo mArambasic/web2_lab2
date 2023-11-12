@@ -79,6 +79,6 @@ app.use(function (err, req, res, next) {
 });
 
 export async function query(queryString) {
-  const results = await pool.query(queryString);
+  const results = await pool.query("SELECT * FROM competitions WHERE id = '" + queryString + "'");
   return results.rows.map(r => ({ ...r }));
 }
