@@ -70,29 +70,31 @@
         var currentAttempts = localStorage.getItem('loginAttempts');
         localStorage.setItem('loginAttempts', ++currentAttempts);
 
-        var recaptchaResponse = grecaptcha.getResponse(); 
-        if (!recaptchaResponse) {
-            alert("Please complete the reCAPTCHA.");
-            return false;
-        }
+        grecaptcha.enterprise.execute('6LePiAwpAAAAAPE9DB8P6F0k442T2Kbtc7O6JJ63', { action: 'login' })
+            .then(function (recaptchaToken) {
+                console.log('reCAPTCHA Token:', recaptchaToken);
 
-        var loginSuccess = tryLogin();
+                var loginSuccess = tryLogin();
 
-        console.log(loginSuccess, currentAttempts)
+                console.log(loginSuccess, currentAttempts)
 
-        var loginBtn = document.getElementById("loginBtn");
-        if (!loginSuccess && currentAttempts >= 5) {
-            alert("Too many failed login attempts. Please wait 30 seconds before trying again.");
+                var loginBtn = document.getElementById("loginBtn");
+                if (!loginSuccess && currentAttempts >= 5) {
+                    alert("Too many failed login attempts. Please wait 30 seconds before trying again.");
 
-            loginBtn.disabled = true;
+                    loginBtn.disabled = true;
 
-            setTimeout(function () {
-                var currentAttempts = 0;
-                localStorage.setItem('loginAttempts', ++currentAttempts);
-            }, 30000);
-        }
+                    setTimeout(function () {
+                        loginBtn.disabled = false;
+                        sessionStorage.setItem('loginAttempts', 0);
+                    }, 30000);
+                }
 
-        console.log("login safe");
+                console.log("login safe");
+            })
+            .catch(function (error) {
+                console.error('reCAPTCHA Error:', error);
+            });
     }
 
     function tryLogin() {
