@@ -22,13 +22,14 @@
 </div>
 <br>
 
-<form action="login" method="post" onsubmit="return login()">
+<form onsubmit="return login()">
+    <input type="checkbox" name="unsafe" id="unsafeCheckbox"> Enable vulnerability
+    <br>
     Username: <input type="text" name="username" id="username"> 
     <br>
     Password: <input type="text" name="password" id="password">
     <br>
     <input type="submit" value="LOGIN" id="loginBtn">
-    <input type="checkbox" name="unsafe" id="unsafeCheckbox"> Use Unsafe Search
 </form>
 
 <script>
