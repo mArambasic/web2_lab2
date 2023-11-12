@@ -27,6 +27,8 @@
 <div class="hint-box">
     <p>Pressing the "Enable vulnerability" checkbox disables the following security measures:</p>
     <p>1) Limiting login attempts</p>
+    <p>2) Not ignoring captcha</p>
+    <p>3) Non specific alerts on failed login attempts (example: "No user found" instead of "Incorrect username")</p>
 </div>
 <br>
 
@@ -61,12 +63,14 @@
         var currentAttempts = localStorage.getItem('loginAttempts');
         localStorage.setItem('loginAttempts', ++currentAttempts);
 
-        var loginSuccess = tryLogin();
+        alert(tryLogin());
 
         console.log("login unsafe");
     }
 
     function login_safe() {
+        console.log("login safe");
+
         var currentAttempts = localStorage.getItem('loginAttempts');
         localStorage.setItem('loginAttempts', ++currentAttempts);
 
@@ -74,23 +78,25 @@
             .then(function (recaptchaToken) {
                 console.log('reCAPTCHA Token:', recaptchaToken);
 
-                var loginSuccess = tryLogin();
+                var loginSuccess = tryLogin() !="incorrect password" && tryLogin() !="incorrect password";
 
                 console.log(loginSuccess, currentAttempts)
 
                 var loginBtn = document.getElementById("loginBtn");
                 if (!loginSuccess && currentAttempts >= 5) {
-                    alert("Too many failed login attempts. Please wait 30 seconds before trying again.");
+                    if(currentAttempts >= 5) {
+                        alert("Too many failed login attempts. Please wait 30 seconds before trying again.");
 
-                    loginBtn.disabled = true;
+                        loginBtn.disabled = true;
 
-                    setTimeout(function () {
-                        loginBtn.disabled = false;
-                        sessionStorage.setItem('loginAttempts', 0);
-                    }, 30000);
+                        setTimeout(function () {
+                            loginBtn.disabled = false;
+                            sessionStorage.setItem('loginAttempts', 0);
+                        }, 30000);
+                    } else {
+                        alert("No user found");
+                    }
                 }
-
-                console.log("login safe");
             })
             .catch(function (error) {
                 console.error('reCAPTCHA Error:', error);
@@ -98,8 +104,12 @@
     }
 
     function tryLogin() {
+        // not logging in, just using to show diffrent vulnerabilities
         console.log("trying to log in");
-        return false;
+
+        var currentAttempts = localStorage.getItem('loginAttempts');
+        if(currentAttempts % 2 == 0) return "incorrect username"
+        else return "incorrect password"
     }
 </script>
 
