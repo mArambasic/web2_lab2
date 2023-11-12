@@ -30,20 +30,21 @@
     <p>Pressing the "Enable vulnerability" checkbox disables the following security measures:</p>
     <p>1) Limiting login attempts</p>
     <p>2) Non-specific alerts on failed login attempts (example: "No user found" instead of "Incorrect username")</p>
-    <p>Note for dummy login data</p>
-    <p> - login will be successful if username and password are "test"</p>
-    <p> - if loginAttempts are divided by 2 it will show incorrect username else it will show incorrect password.</p>
+    <br>
+    <p>Note for dummy login data:</p>
+    <p> - login will be succesful if username = test and password = testPassword</p>
 </div>
 <br>
 
 <form onsubmit="return login()">
     <input type="checkbox" name="unsafe" id="unsafeCheckbox"> Enable vulnerability
-    <br>  <br>
+    <br> 
     Username: <input type="text" name="username" id="username"> <br>
-    Password: <input type="text" name="password" id="password"> <br> <br>
+    Password: <input type="text" name="password" id="password"> <br> 
     <input type="submit" value="LOGIN" id="loginBtn">
 </form>
 
+<br> <br> 
 <div class="hint-box">
     <p>REGISTRATION</p>
     <p>Pressing the "Enable vulnerability" checkbox disables the following security measures:</p>
@@ -54,9 +55,9 @@
 
 <form onsubmit="return registration()">
     <input type="checkbox" name="unsafe" id="unsafeCheckboxRegistration"> Enable vulnerability
-    <br>  <br>
+    <br> 
     Username: <input type="text" name="username" id="usernameRegistration"> <br>
-    Password: <input type="text" name="password" id="passwordRegistration"> <br> <br>
+    Password: <input type="text" name="password" id="passwordRegistration"> <br> 
     <input type="submit" value="REGISTRATION" id="registrationBtn">
 </form>
 
@@ -92,7 +93,7 @@
         var currentAttempts = localStorage.getItem('loginAttempts');
         localStorage.setItem('loginAttempts', ++currentAttempts);
 
-        var loginSuccess = tryLogin() !== "incorrect password" && tryLogin() !== "incorrect password";
+        var loginSuccess = tryLogin() === "login success";
 
         console.log(loginSuccess, currentAttempts)
 
@@ -122,13 +123,15 @@
         var password = document.getElementById("password");
 
         console.log("trying to log in");
+        console.log(username, password)
 
         var currentAttempts = localStorage.getItem('loginAttempts');
-        if(username === "test" && password === "test") {
+        if(username === "test" && password === "testPassword") {
             localStorage.setItem('loginAttempts', 0);
             return "login success"
-        } else if(currentAttempts % 2 == 0) return "incorrect username"
-        else return "incorrect password"
+        } else if(username != "test" && password === "testPassword") return "incorrect username"
+        else if(username === "test" && password != "testPassword") return "incorrect password"
+        else return "both the username and the password are incorrect"
     }
 
     function registration() {
@@ -149,13 +152,12 @@
     }
 
     function registration_safe() {
-        const bcrypt = require('bcrypt');
         const saltRounds = 10;
         const minimumLength = 8;
         const maximumLength = 64;
 
         var username = document.getElementById("usernameRegistration");
-        var password = document.getElementById("passwordRegistration");
+        var password = document.getElementById("passwordRegistration").value;
         var passwordLength = password.length;
 
         if(passwordLength < 8) {
@@ -166,7 +168,7 @@
             return;
         }
 
-        hashPassword(originalPassword)
+        hashPassword(password)
         .then((hashedPassword) => {
             register(username, hashedPassword);
         })
