@@ -28,7 +28,7 @@
 <div class="hint-box">
     <p>LOGIN</p>
     <p>Pressing the "Enable vulnerability" checkbox disables the following security measures:</p>
-    <p>1) Limiting login attempts</p>
+    <p>1) Limiting login attempts (maximum of 5 failed login attempts in a row)</p>
     <p>2) Non-specific alerts on failed login attempts (example: "No user found" instead of "Incorrect username")</p>
     <br>
     <p>Note for dummy login data:</p>
@@ -112,6 +112,7 @@
                 alert("No user found");
             }
         } else {
+            localStorage.setItem('loginAttempts', 0);
             alert("Login success");
         }
     }
