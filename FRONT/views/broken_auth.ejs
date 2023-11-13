@@ -108,7 +108,7 @@
                     localStorage.setItem('loginAttempts', 0);
                 }, 30000);
             } else {
-                localStorage.setItem('loginAttempts', 0);
+                localStorage.setItem('loginAttempts', currentAttempts);
                 alert("No user found");
             }
         } else {
@@ -124,8 +124,6 @@
 
         console.log("trying to log in");
         console.log(username, password)
-
-        var currentAttempts = localStorage.getItem('loginAttempts');
 
         if(username === "test" && password === "testPassword") return "login success"
         else if(username != "test" && password === "testPassword") return "incorrect username"
