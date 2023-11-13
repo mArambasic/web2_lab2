@@ -18,18 +18,21 @@
 <br>
 
 <div class="hint-box">
-    <p>SQL Injection</p>
-    <p>Pressing the "Enable vulnerability" checkbox disables the following security measures:</p>
+    <p>Pressing the "Enable vulnerability" button enables the following vulnerabilities:</p>
+    <p>1) Tautology (example: "552 OR 1=1")</p>
+    <p>2) Union input (example: "552 union SELECT competition_id, link, name, user_id from competition where competition_id = 557")</p>
+    <p>3) Illegal Queries (example: "552 union SELECT * from competition ORDER BY 2#")</p>
 </div>
 <br>
 
 <form onsubmit="return search()">
-    <input type="checkbox" name="unsafe" id="unsafeCheckbox"> Enable vulnerability
+    <input type="checkbox" name="unsafe" id="unsafeCheckbox"> Enable vulnerabilities
     <br>
-    <input type="text" name="query" id="query">
-    <br>
+    Search for your competition with the competition id: <input type="text" name="query" id="query">
     <input type="submit" value="SEARCH">
 </form>
+
+<br>
 
 <div id="results"></div>
 
@@ -42,33 +45,57 @@
         } else {
             search_safe();
         }
+        return false;
     }
 
     function search_unsafe() {
         console.log("searching unsafe")
         
         var queryString = document.getElementById("query").value;
-        queryAsync(queryString)
+        query(queryString)
     }
     function search_safe() {
         console.log("searching safe")
 
         var queryString = document.getElementById("query").value;
 
-        if (!query.match(/^[a-zA-Z0-9_-]+$/)) {
-            alert("Unijeli ste neispravan unos.");
+        if (!queryString.match(/^[0-9]+$/)) {
+            alert("You must only enter digits");
             return;
         }
 
-        queryAsync(queryString)
+        query(queryString)
     }
 
-    async function queryAsync(queryString) {
+    async function query(queryString) {
         try {
-            const results = await query(queryString);
-            console.log(results);
+            const response = await fetch(`/competition/${queryString}`);
+            if (!response.ok) return;
 
-            document.getElementById("results").innerHTML = results;
+            response.json().then(jsonData => {
+                console.log(jsonData);
+
+                const results = document.getElementById("results");
+                const table = document.createElement("table");
+
+                const headerRow = table.insertRow();
+                for (const key in jsonData[0]) {
+                    const th = document.createElement("th");
+                    th.textContent = key;
+                    headerRow.appendChild(th);
+                }
+
+                jsonData.forEach((data) => {
+                    const row = table.insertRow();
+                    for (const key in data) {
+                        const cell = row.insertCell();
+                        cell.textContent = data[key];
+                    }
+                });
+
+                results.innerHTML = "";
+                results.appendChild(table);
+            });
 
         } catch (error) {
             console.error('Error:', error);

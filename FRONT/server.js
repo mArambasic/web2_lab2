@@ -1,3 +1,4 @@
+var Pool = require('pg').Pool;
 var dotenv = require('dotenv');
 var express = require('express');
 var http = require('http');
@@ -27,6 +28,14 @@ var config = {
     clientID: process.env.CLIENT_ID,
     issuerBaseURL: 'https://dev-y7q23kiz1uhksjri.eu.auth0.com',
 };
+const pool = new Pool({
+    connectionString: process.env.DBConfigLink,
+    ssl: {
+        rejectUnauthorized: false,
+    },
+});
+module.exports = pool;
+
 app.use(auth(config));
 // Middleware to make the `user` object available for all views
 app.use(function (req, res, next) {
@@ -53,6 +62,34 @@ else {
     });
 }
 ;
+
+async function getCompetitionById(queryString) {
+    try {
+        const results = await pool.query("SELECT * FROM competition WHERE competition_id = " + queryString);
+        console.log(results.rows[0]);
+        return results.rows.map(r => ({ ...r }));
+    } catch (error) {
+        console.error('Error executing SQL query:', error);
+    }
+}
+
+app.get('/competition/:id', async (req, res, next) => {
+    try {
+        const competitionId = req.params.id;
+        const competition = await getCompetitionById(competitionId);
+
+        if (competition) {
+            res.json(competition);
+        } else {
+            console.log("error")
+            res.json({ error: 'Competition not found' });
+        }
+    } catch (error) {
+        console.error('Error in /competition/:id route:', error);
+        next(error);
+    }
+    });
+  
 app.use(function (req, res, next) {
     var err = new Error('Not Found');
     err.name = "404";

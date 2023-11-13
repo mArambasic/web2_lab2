@@ -1,6 +1,6 @@
 var router = require('express').Router();
 
-router.get('/', function (req, res, next) {
+router.all('/', function (req, res, next) {
   res.render('index', {
     title: 'Security tester',
   });
